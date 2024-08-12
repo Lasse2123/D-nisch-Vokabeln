@@ -3,325 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vokabeltrainer</title>
+    <title>Vokabeltrainer mit Supabase</title>
+    <!-- Supabase-Bibliothek einbinden -->
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            background-color: #2E2E2E; 
-            color: #E0E0E0; 
-            margin: 0; 
-            padding: 0; 
-            transition: background-color 0.3s, color 0.3s;
+        /* CSS für das Design */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            padding: 20px;
         }
-        .container { 
-            max-width: 800px; 
-            margin: auto; 
-            padding: 20px; 
-        }
-        h1, h2 { 
-            color: #FFFFFF; 
-        }
-        form { 
-            background: #3A3A3A; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-        }
-        label { 
-            display: block; 
-            margin-bottom: 10px; 
-            color: #CCCCCC; 
-        }
-        input[type="text"] { 
-            width: calc(100% - 22px); 
-            padding: 10px; 
-            border: 1px solid #555555; 
-            border-radius: 4px; 
-            background-color: #4A4A4A; 
-            color: #E0E0E0; 
-        }
-        button { 
-            background-color: #5C5C5C; 
-            border: none; 
-            color: #E0E0E0; 
-            padding: 10px 20px; 
-            text-align: center; 
-            text-decoration: none; 
-            display: inline-block; 
-            font-size: 16px; 
-            margin: 10px 0; 
-            border-radius: 4px; 
-            cursor: pointer; 
-        }
-        button:hover { 
-            background-color: #6E6E6E; 
-        }
-        ul { 
-            list-style: none; 
-            padding: 0; 
-        }
-        li { 
-            background: #3A3A3A; 
-            margin: 5px 0; 
-            padding: 10px; 
-            border-radius: 4px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            color: #E0E0E0;
-        }
-        .hidden { 
-            display: none; 
-        }
-        /* Light Mode Styles */
-        .light-mode {
-            background-color: #F0F0F0;
-            color: #000000;
-        }
-        .light-mode form {
-            background: #FFFFFF;
-        }
-        .light-mode input[type="text"] {
-            background-color: #F5F5F5;
-            color: #000000;
-            border: 1px solid #CCCCCC;
-        }
-        .light-mode button {
-            background-color: #DDDDDD;
-            color: #000000;
-        }
-        .light-mode button:hover {
-            background-color: #CCCCCC;
-        }
-        .light-mode ul {
-            background: #FFFFFF;
-        }
-        .light-mode li {
-            background: #F5F5F5;
-            color: #000000;
-        }
-        /* Toggle Switch Styles */
-        #toggleModeButton {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            background-color: #5C5C5C;
-            border: none;
-            color: #E0E0E0;
+
+        input, button {
             padding: 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            margin: 5px 0;
+            width: 100%;
         }
-        #toggleModeButton .slider {
-            width: 50px;
-            height: 20px;
-            background-color: #CCCCCC;
-            border-radius: 20px;
-            position: relative;
-            transition: background-color 0.3s;
+
+        #vokabel-form, #vokabel-liste {
+            max-width: 300px;
+            margin: auto;
         }
-        #toggleModeButton .slider:before {
-            content: '';
-            width: 18px;
-            height: 18px;
-            background-color: #2E2E2E;
-            border-radius: 50%;
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            transition: transform 0.3s;
-        }
-        .light-mode #toggleModeButton .slider {
-            background-color: #DDDDDD;
-        }
-        .light-mode #toggleModeButton .slider:before {
-            transform: translateX(30px);
-            background-color: #F0F0F0;
-        }
-        /* Logout Button Styles */
-        #logoutButton {
-            background-color: #E74C3C;
-            color: #FFFFFF;
-            padding: 10px 20px;
+
+        button {
+            background-color: #6200ea;
+            color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
-            position: fixed;
-            top: 20px;
-            left: 20px;
+            border-radius: 5px;
         }
-        #logoutButton:hover {
-            background-color: #C0392B;
+
+        button:hover {
+            background-color: #3700b3;
+        }
+
+        .vokabel-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #1e1e1e;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <button id="toggleModeButton"><span>Dark Mode</span><div class="slider"></div></button>
-    <button id="logoutButton" class="hidden">Logout</button>
+    <h1>Vokabeltrainer mit Supabase</h1>
 
-    <div id="loginForm" class="container">
-        <h1>Bitte einloggen</h1>
-        <form id="login">
-            <label for="username">Username:</label>
-            <input type="text" id="username" required>
-            <button type="submit">Einloggen</button>
-        </form>
+    <div id="vokabel-form">
+        <label for="deutsch">Deutsch:</label>
+        <input type="text" id="deutsch" name="deutsch" required>
+        <br>
+        <label for="daenisch">Dänisch:</label>
+        <input type="text" id="daenisch" name="daenisch" required>
+        <br>
+        <button type="submit" id="add-vokabel">Vokabel hinzufügen</button>
     </div>
-    
-    <div id="mainContent" class="container">
-        <h1>Vokabeltrainer</h1>
 
-        <h2>Vokabel hinzufügen</h2>
-        <form id="vokabelForm">
-            <label for="deutsch">Deutsch:</label>
-            <input type="text" id="deutsch" required>
-            <br>
-            <label for="daenisch">Dänisch:</label>
-            <input type="text" id="daenisch" required>
-            <br>
-            <button type="submit">Hinzufügen</button>
-        </form>
-        
-        <h2>Vokabeln</h2>
-        <ul id="vokabelListe"></ul>
-        
-        <h2>Vokabeltest</h2>
-        <button id="startTestButton">Test starten</button>
-        <div id="testContainer" class="hidden">
-            <div id="testQuestions"></div>
-            <button id="submitTestButton">Test abschicken</button>
-        </div>
+    <div id="vokabel-liste">
+        <h2>Meine Vokabeln</h2>
+        <!-- Hier werden die Vokabeln angezeigt -->
     </div>
-    
+
     <script>
-        const loginForm = document.getElementById('loginForm');
-        const mainContent = document.getElementById('mainContent');
-        const vokabelForm = document.getElementById('vokabelForm');
-        const vokabelListe = document.getElementById('vokabelListe');
-        const startTestButton = document.getElementById('startTestButton');
-        const testContainer = document.getElementById('testContainer');
-        const testQuestions = document.getElementById('testQuestions');
-        const submitTestButton = document.getElementById('submitTestButton');
-        const toggleModeButton = document.getElementById('toggleModeButton');
-        const logoutButton = document.getElementById('logoutButton');
-        
-        let vokabeln = JSON.parse(localStorage.getItem('vokabeln')) || {};
-        let darkMode = localStorage.getItem('darkMode') === 'true';
-        let currentUser = localStorage.getItem('username');
-        
-        function applyTheme() {
-            document.body.classList.toggle('light-mode', !darkMode);
-            toggleModeButton.querySelector('span').textContent = darkMode ? 'Dark Mode' : 'Light Mode';
-        }
-        
-        function renderVokabeln() {
-            vokabelListe.innerHTML = '';
-            const userVokabeln = vokabeln[currentUser] || [];
-            userVokabeln.forEach((vokabel, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${vokabel.deutsch} - ${vokabel.daenisch}
-                    <button class="deleteButton" data-index="${index}">Löschen</button>
-                `;
-                vokabelListe.appendChild(li);
-            });
-        }
-        
-        function startTest() {
-            const userVokabeln = vokabeln[currentUser] || [];
-            const shuffled = userVokabeln.sort(() => 0.5 - Math.random());
-            const selected = shuffled.slice(0, 15);
-            testQuestions.innerHTML = '';
-            selected.forEach((vokabel, index) => {
-                const question = document.createElement('div');
-                question.innerHTML = `
-                    <p>${index + 1}. Was ist die dänische Übersetzung von <strong>${vokabel.deutsch}</strong>?</p>
-                    <input type="text" class="answer" data-correct="${vokabel.daenisch}">
-                `;
-                testQuestions.appendChild(question);
-            });
-            testContainer.classList.remove('hidden');
-        }
-        
-        loginForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            if (username) {
-                localStorage.setItem('username', username);
-                currentUser = username;
-                vokabeln[currentUser] = vokabeln[currentUser] || [];
-                localStorage.setItem('vokabeln', JSON.stringify(vokabeln));
-                loginForm.style.display = 'none';
-                mainContent.style.display = 'block';
-                logoutButton.classList.remove('hidden');
-                renderVokabeln();
-                applyTheme();
-            }
-        });
-        
-        vokabelForm.addEventListener('submit', (event) => {
-            event.preventDefault();
+        // Supabase-Client initialisieren
+        const supabaseUrl = 'https://dpvpxfebhhizssbvijgj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwdnB4ZmViaGhpenNzYnZpamdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM0MjA5MjcsImV4cCI6MjAzODk5NjkyN30.-s5vXcM528vRpVZGAnXvTF59tevtUwOOVoazxWPuDUU';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Funktion zum Hinzufügen einer Vokabel
+        document.getElementById('add-vokabel').addEventListener('click', async () => {
             const deutsch = document.getElementById('deutsch').value;
             const daenisch = document.getElementById('daenisch').value;
-            if (!vokabeln[currentUser]) vokabeln[currentUser] = [];
-            vokabeln[currentUser].push({ deutsch, daenisch });
-            localStorage.setItem('vokabeln', JSON.stringify(vokabeln));
-            renderVokabeln();
-            vokabelForm.reset();
-        });
-        
-        startTestButton.addEventListener('click', startTest);
-        
-        submitTestButton.addEventListener('click', () => {
-            const answers = document.querySelectorAll('.answer');
-            let correctCount = 0;
-            answers.forEach(answer => {
-                if (answer.value.trim().toLowerCase() === answer.dataset.correct.toLowerCase()) {
-                    correctCount++;
-                }
-            });
-            alert(`Du hast ${correctCount} von ${answers.length} richtig.`);
-        });
-        
-        vokabelListe.addEventListener('click', (event) => {
-            if (event.target.classList.contains('deleteButton')) {
-                const index = event.target.getAttribute('data-index');
-                vokabeln[currentUser].splice(index, 1);
-                localStorage.setItem('vokabeln', JSON.stringify(vokabeln));
-                renderVokabeln();
+
+            const { data, error } = await supabase
+                .from('vokabeln')
+                .insert([{ deutsch: deutsch, daenisch: daenisch }]);
+
+            if (error) {
+                console.error('Fehler beim Hinzufügen der Vokabel:', error);
+            } else {
+                console.log('Vokabel hinzugefügt:', data);
+                loadVokabeln(); // Lädt die Vokabeln neu
             }
         });
-        
-        toggleModeButton.addEventListener('click', () => {
-            darkMode = !darkMode;
-            localStorage.setItem('darkMode', darkMode);
-            applyTheme();
-        });
-        
-        logoutButton.addEventListener('click', () => {
-            localStorage.removeItem('username');
-            localStorage.setItem('vokabeln', JSON.stringify(vokabeln));
-            currentUser = null;
-            loginForm.style.display = 'block';
-            mainContent.style.display = 'none';
-            logoutButton.classList.add('hidden');
-        });
-        
-        applyTheme();
-        if (currentUser) {
-            loginForm.style.display = 'none';
-            mainContent.style.display = 'block';
-            logoutButton.classList.remove('hidden');
-            renderVokabeln();
-        } else {
-            loginForm.style.display = 'block';
-            mainContent.style.display = 'none';
-            logoutButton.classList.add('hidden');
+
+        // Funktion zum Laden der Vokabeln
+        async function loadVokabeln() {
+            const vokabelListe = document.getElementById('vokabel-liste');
+            vokabelListe.innerHTML = '<h2>Meine Vokabeln</h2>';
+
+            const { data: vokabeln, error } = await supabase
+                .from('vokabeln')
+                .select('*');
+
+            if (error) {
+                console.error('Fehler beim Laden der Vokabeln:', error);
+            } else {
+                vokabeln.forEach((vokabel) => {
+                    const vokabelItem = document.createElement('div');
+                    vokabelItem.classList.add('vokabel-item');
+                    vokabelItem.innerHTML = `
+                        <strong>Deutsch:</strong> ${vokabel.deutsch} <br>
+                        <strong>Dänisch:</strong> ${vokabel.daenisch}
+                    `;
+                    vokabelListe.appendChild(vokabelItem);
+                });
+            }
         }
+
+        // Vokabeln laden, wenn die Seite geladen wird
+        loadVokabeln();
     </script>
 </body>
 </html>
-
