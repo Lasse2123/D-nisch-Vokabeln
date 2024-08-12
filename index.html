@@ -112,7 +112,9 @@
         }
 
         // Vokabeln laden, wenn die Seite geladen wird
-        loadVokabeln();
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVokabeln();
+        });
     </script>
 </body>
 </html>
