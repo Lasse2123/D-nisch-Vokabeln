@@ -68,7 +68,8 @@
         // Supabase-Client initialisieren
         const supabaseUrl = 'https://dpvpxfebhhizssbvijgj.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwdnB4ZmViaGhpenNzYnZpamdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM0MjA5MjcsImV4cCI6MjAzODk5NjkyN30.-s5vXcM528vRpVZGAnXvTF59tevtUwOOVoazxWPuDUU';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const { createClient } = supabase; // Importiere die Methode
+        const supabase = createClient(supabaseUrl, supabaseKey); // Erstelle den Client
 
         // Funktion zum Hinzufügen einer Vokabel
         document.getElementById('add-vokabel').addEventListener('click', async () => {
